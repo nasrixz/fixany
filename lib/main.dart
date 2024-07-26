@@ -4,7 +4,6 @@ import 'package:camera/camera.dart';
 import 'package:fixany/theme.dart';
 import 'package:fixany/util.dart';
 import 'package:flutter/material.dart';
-import 'package:video_player/video_player.dart';
 
 void main() => runApp(const MyApp());
 
@@ -18,7 +17,6 @@ class MyApp extends StatelessWidget {
 
     MaterialTheme theme = MaterialTheme(textTheme);
     return MaterialApp(
-      title: 'Flutter Camera App',
       themeMode: ThemeMode.dark,
       theme: brightness == Brightness.light ? theme.light() : theme.dark(),
       debugShowCheckedModeBanner: false,
@@ -95,25 +93,6 @@ class CameraPageState extends State<CameraPage> with WidgetsBindingObserver {
     }
   }
 
-  // Future<XFile?> captureVideo() async {
-  //   final CameraController? cameraController = _controller;
-  //   try {
-  //     setState(() {
-  //       _isRecording = true;
-  //     });
-  //     await cameraController?.startVideoRecording();
-  //     await Future.delayed(const Duration(seconds: 5));
-  //     final video = await cameraController?.stopVideoRecording();
-  //     setState(() {
-  //       _isRecording = false;
-  //     });
-  //     return video;
-  //   } on CameraException catch (e) {
-  //     debugPrint('Error occured while taking picture: $e');
-  //     return null;
-  //   }
-  // }
-
   void _onTakePhotoPressed() async {
     final navigator = Navigator.of(context);
     final xFile = await capturePhoto();
@@ -130,22 +109,6 @@ class CameraPageState extends State<CameraPage> with WidgetsBindingObserver {
     }
   }
 
-  // void _onRecordVideoPressed() async {
-  //   final navigator = Navigator.of(context);
-  //   final xFile = await captureVideo();
-  //   if (xFile != null) {
-  //     if (xFile.path.isNotEmpty) {
-  //       navigator.push(
-  //         MaterialPageRoute(
-  //           builder: (context) => PreviewPage(
-  //             videoPath: xFile.path,
-  //           ),
-  //         ),
-  //       );
-  //     }
-  //   }
-  // }
-
   @override
   Widget build(BuildContext context) {
     if (_isCameraInitialized) {
@@ -158,18 +121,18 @@ class CameraPageState extends State<CameraPage> with WidgetsBindingObserver {
                       width: double.infinity,
                       child: CameraPreview(_controller!))),
               const SizedBox(height: 34),
-                ElevatedButton(
-                  onPressed: _onTakePhotoPressed,
-                  style: ElevatedButton.styleFrom(
-                      fixedSize: const Size(70, 70),
-                      shape: const CircleBorder(),
-                      backgroundColor: Colors.white),
-                  child: const Icon(
-                    Icons.camera_alt,
-                    color: Colors.black,
-                    size: 30,
-                  ),
+              ElevatedButton(
+                onPressed: _onTakePhotoPressed,
+                style: ElevatedButton.styleFrom(
+                    fixedSize: const Size(70, 70),
+                    shape: const CircleBorder(),
+                    backgroundColor: Colors.white),
+                child: const Icon(
+                  Icons.camera_alt,
+                  color: Colors.black,
+                  size: 30,
                 ),
+              ),
             ],
           ),
         ),
@@ -232,32 +195,13 @@ class PreviewPage extends StatefulWidget {
 }
 
 class _PreviewPageState extends State<PreviewPage> {
-  VideoPlayerController? controller;
-
-  // Future<void> _startVideoPlayer() async {
-  //   if (widget.videoPath != null) {
-  //     controller = VideoPlayerController.file(File(widget.videoPath!));
-  //     await controller!.initialize().then((_) {
-  //       // Ensure the first frame is shown after the video is initialized,
-  //       // even before the play button has been pressed.
-  //       setState(() {});
-  //     });
-  //     await controller!.setLooping(true);
-  //     await controller!.play();
-  //   }
-  // }
-
   @override
   void initState() {
     super.initState();
-    // if (widget.videoPath != null) {
-    //   _startVideoPlayer();
-    // }
   }
 
   @override
   void dispose() {
-    controller?.dispose();
     super.dispose();
   }
 
@@ -265,16 +209,10 @@ class _PreviewPageState extends State<PreviewPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Center(
-        child: widget.imagePath != null
-            ? Image.file(
-                File(widget.imagePath ?? ""),
-                fit: BoxFit.cover,
-              )
-            : AspectRatio(
-                aspectRatio: controller!.value.aspectRatio,
-                child: VideoPlayer(controller!),
-              ),
-      ),
+          child: Image.file(
+        File(widget.imagePath ?? ""),
+        fit: BoxFit.cover,
+      )),
     );
   }
 }
