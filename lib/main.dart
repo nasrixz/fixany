@@ -1,10 +1,13 @@
-import 'dart:io';
+import 'package:fixany/di/service_locator.dart';
 import 'package:fixany/view/camera_page/camera_page.dart';
 import 'package:fixany/theme.dart';
 import 'package:fixany/util.dart';
 import 'package:flutter/material.dart';
 
-void main() => runApp(const MyApp());
+Future<void> main() async {
+  await setup();
+  runApp(const MyApp());
+}
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -23,4 +26,3 @@ class MyApp extends StatelessWidget {
     );
   }
 }
-
