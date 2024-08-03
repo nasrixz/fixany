@@ -83,7 +83,7 @@ class CameraPageState extends State<CameraPage> with WidgetsBindingObserver {
                   child: SizedBox(
                       width: double.infinity,
                       child: CameraPreview(cController.controller!))),
-              const SizedBox(height: 34),
+              const SizedBox(height: 24),
               ElevatedButton(
                 onPressed: _onTakePhotoPressed,
                 style: ElevatedButton.styleFrom(
@@ -93,9 +93,10 @@ class CameraPageState extends State<CameraPage> with WidgetsBindingObserver {
                 child: const Icon(
                   Icons.camera_alt,
                   color: Colors.black,
-                  size: 30,
+                  size: 25,
                 ),
               ),
+              const SizedBox(height: 24),
             ],
           ),
         ),
