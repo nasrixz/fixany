@@ -9,17 +9,17 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:google_generative_ai/google_generative_ai.dart';
 
-class PreviewPage extends StatefulWidget {
+class DynamicPreviewPage extends StatefulWidget {
   final String? imagePath;
   final String? videoPath;
 
-  const PreviewPage({super.key, this.imagePath, this.videoPath});
+  const DynamicPreviewPage({super.key, this.imagePath, this.videoPath});
 
   @override
-  State<PreviewPage> createState() => _PreviewPageState();
+  State<DynamicPreviewPage> createState() => _DynamicPreviewPageState();
 }
 
-class _PreviewPageState extends State<PreviewPage> {
+class _DynamicPreviewPageState extends State<DynamicPreviewPage> {
   final modelController = getIt<ModelController>();
   late StreamController<Response> responseData;
 
@@ -38,7 +38,7 @@ class _PreviewPageState extends State<PreviewPage> {
     responseData = StreamController<Response>();
     getResult(widget.imagePath).then((value) async {
       final prompt = TextPart(
-          "based on this image analyze the broken part, and list the step to fix it");
+          "based on this");
       final content = [DataPart('image/jpeg', value)];
       await modelController.model.generateContent([
         Content.multi([prompt, ...content])
