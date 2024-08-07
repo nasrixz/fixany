@@ -1,6 +1,7 @@
 import 'package:camera/camera.dart';
 import 'package:fixany/camera/camera_function.dart';
 import 'package:fixany/di/service_locator.dart';
+import 'package:fixany/view/command_page/command_page.dart';
 import 'package:fixany/view/preview/preview_page.dart';
 import 'package:flutter/material.dart';
 
@@ -83,18 +84,65 @@ class CameraPageState extends State<CameraPage> with WidgetsBindingObserver {
                   child: SizedBox(
                       width: double.infinity,
                       child: CameraPreview(cController.controller!))),
-              const SizedBox(height: 24),
-              ElevatedButton(
-                onPressed: _onTakePhotoPressed,
-                style: ElevatedButton.styleFrom(
-                    fixedSize: const Size(70, 70),
-                    shape: const CircleBorder(),
-                    backgroundColor: Colors.white),
-                child: const Icon(
-                  Icons.camera_alt,
-                  color: Colors.black,
-                  size: 25,
+              const SizedBox(height: 8),
+              // SvgPicture.asset('assets/logo/fixany_logo.svg', semanticsLabel: 'Acme Logo',height: 50,width: 100,),
+              const SizedBox(height: 8),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Column(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                          vertical: 8, horizontal: 16),
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(20),
+                          color: Colors.grey.withOpacity(0.05)),
+                      child: const Text('Default Command'),
+                    ),
+                  ],
                 ),
+              ),
+              const SizedBox(height: 8),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: IconButton(
+                        onPressed: () {
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (context) => const CommandPage(),
+                            ),
+                          );
+                        },
+                        icon: const Icon(
+                          Icons.language,
+                          size: 30,
+                        )),
+                  ),
+                  ElevatedButton(
+                    onPressed: _onTakePhotoPressed,
+                    style: ElevatedButton.styleFrom(
+                        fixedSize: const Size(75, 75),
+                        shape: const CircleBorder(),
+                        backgroundColor: Colors.grey.withOpacity(0.1)),
+                    child: const Icon(
+                      Icons.camera_alt,
+                      color: Colors.white,
+                      size: 25,
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: IconButton(
+                        onPressed: () {},
+                        icon: const Icon(
+                          Icons.camera_front,
+                          size: 30,
+                        )),
+                  ),
+                ],
               ),
               const SizedBox(height: 24),
             ],

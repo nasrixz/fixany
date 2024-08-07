@@ -86,7 +86,7 @@ class _DynamicPreviewPageState extends State<DynamicPreviewPage> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'Broken Part',
+                          'Title',
                           style: GoogleFonts.poppins(
                               fontWeight: FontWeight.w400, fontSize: 16),
                         ),
