@@ -1,9 +1,16 @@
+import 'dart:async';
+
 import 'package:camera/camera.dart';
 import 'package:fixany/camera/camera_function.dart';
+import 'package:fixany/controller/utils_controller.dart';
 import 'package:fixany/di/service_locator.dart';
+import 'package:fixany/model/command_model.dart';
+import 'package:fixany/services/database_helper.dart';
 import 'package:fixany/view/command_page/command_page.dart';
 import 'package:fixany/view/preview/preview_page.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+import 'package:just_the_tooltip/just_the_tooltip.dart';
 
 class CameraPage extends StatefulWidget {
   const CameraPage({super.key});
@@ -16,10 +23,23 @@ class CameraPageState extends State<CameraPage> with WidgetsBindingObserver {
   final cController = getIt<CameraFunction>();
   bool _isCameraInitialized = false;
   late final List<CameraDescription> _cameras;
-  // bool _isRecording = false;
+  DatabaseHelper noteDatabase = DatabaseHelper.instance;
+  List<CommandModel> command = [];
+  final controller = getIt<UtilsController>();
+ 
 
   @override
   void initState() {
+    controller.rtcommand = StreamController<List<CommandModel>>();
+    controller.currentCommandCL = StreamController<CommandModel>();
+    noteDatabase.getAll().then((value) {
+      controller.rtcommand.sink.add(value);
+      setState(() {
+        command = value;
+        controller.cmdData = value;
+      });
+    });
+    
     super.initState();
     WidgetsBinding.instance.addObserver(this);
     initCamera();
@@ -57,7 +77,7 @@ class CameraPageState extends State<CameraPage> with WidgetsBindingObserver {
     super.dispose();
   }
 
-  void _onTakePhotoPressed() async {
+  void onTakePhotoPressed(String cmd) async {
     final navigator = Navigator.of(context);
     final xFile = await cController.capturePhoto();
     if (xFile != null) {
@@ -65,6 +85,7 @@ class CameraPageState extends State<CameraPage> with WidgetsBindingObserver {
         navigator.push(
           MaterialPageRoute(
             builder: (context) => PreviewPage(
+              crCommand: cmd,
               imagePath: xFile.path,
             ),
           ),
@@ -84,22 +105,165 @@ class CameraPageState extends State<CameraPage> with WidgetsBindingObserver {
                   child: SizedBox(
                       width: double.infinity,
                       child: CameraPreview(cController.controller!))),
-              const SizedBox(height: 8),
-              // SvgPicture.asset('assets/logo/fixany_logo.svg', semanticsLabel: 'Acme Logo',height: 50,width: 100,),
-              const SizedBox(height: 8),
+              Padding(
+                padding: const EdgeInsets.all(8),
+                child: Row(
+                  children: [
+                    const SizedBox(
+                      width: 12,
+                    ),
+                    JustTheTooltip(
+                      preferredDirection: AxisDirection.up,
+                      backgroundColor: Colors.grey[900],
+                      content: const Padding(
+                        padding: EdgeInsets.all(8.0),
+                        child: Text(
+                          'Fixany powered by Gemini',
+                          style: TextStyle(
+                              fontWeight: FontWeight.w600, color: Colors.white),
+                        ),
+                      ),
+                      child: SvgPicture.asset(
+                        'assets/logo/fixany_white.svg',
+                        height: 25,
+                        width: 80,
+                      ),
+                    ),
+                    Expanded(child: Container()),
+                    IconButton(
+                        onPressed: () {},
+                        icon: const Icon(
+                          Icons.settings,
+                          color: Color(0xFF42b883),
+                        ))
+                  ],
+                ),
+              ),
               Padding(
                 padding: const EdgeInsets.all(8.0),
-                child: Column(
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                          vertical: 8, horizontal: 16),
-                      decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(20),
-                          color: Colors.grey.withOpacity(0.05)),
-                      child: const Text('Default Command'),
-                    ),
-                  ],
+                child: SizedBox(
+                  width: double.infinity,
+                  height: 35,
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: StreamBuilder<List<CommandModel>>(
+                          initialData: command,
+                            stream: controller.rtcommand.stream,
+                            builder: (context, snapshot) {
+                              if (snapshot.connectionState ==
+                                  ConnectionState.waiting) {
+                                return const Center(
+                                    child: CircularProgressIndicator());
+                              } else if (snapshot.hasError) {
+                                final error = snapshot.error;
+                                return Center(child: Text(error.toString()));
+                              } else if (snapshot.hasData) {
+                                if (snapshot.data!.isEmpty) {
+                                  return const Center(
+                                    child: Text('No data'),
+                                  );
+                                }
+                                return ListView.builder(
+                                    shrinkWrap: true,
+                                    scrollDirection: Axis.horizontal,
+                                    itemCount: snapshot.data!.length,
+                                    itemBuilder: (context, index) {
+                                      return GestureDetector(
+                                        onTap: () {
+                                          if (snapshot.data![index].status == 0) {
+                                            for (int i = 0;
+                                                i < snapshot.data!.length;
+                                                i++) {
+                                              noteDatabase.updateAll(
+                                                  0, snapshot.data![i].id!);
+                                            }
+                                            noteDatabase
+                                                .update(
+                                                    CommandModel(
+                                                        snapshot
+                                                            .data![index].title,
+                                                        snapshot
+                                                            .data![index].command,
+                                                        1),
+                                                    snapshot.data![index].id!)
+                                                .then((value) {
+                                              noteDatabase.getAll().then((value) {
+                                                controller.rtcommand.sink
+                                                    .add(value);
+                                              });
+                                            });
+                                            setState(() {
+                                              controller.currCommand =
+                                                  snapshot.data![index].command!;
+                                            });
+                                            debugPrint(controller.currCommand);
+                                          }
+                                        },
+                                        child: JustTheTooltip(
+                                          preferredDirection: AxisDirection.up,
+                                          backgroundColor: Colors.grey[900],
+                                          content: Padding(
+                                            padding: const EdgeInsets.all(8.0),
+                                            child: Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.start,
+                                              mainAxisSize: MainAxisSize.min,
+                                              children: [
+                                                const Text(
+                                                  'Command',
+                                                  style: TextStyle(
+                                                      fontWeight: FontWeight.w600,
+                                                      color: Colors.white),
+                                                ),
+                                                const SizedBox(
+                                                  height: 5,
+                                                ),
+                                                Text(
+                                                  snapshot.data![index].command!,
+                                                  style: const TextStyle(
+                                                      fontWeight: FontWeight.w400,
+                                                      color: Colors.white),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                          child: Container(
+                                            margin: const EdgeInsets.only(
+                                                right: 4, left: 4),
+                                            padding: const EdgeInsets.symmetric(
+                                                vertical: 8, horizontal: 16),
+                                            decoration: BoxDecoration(
+                                                border: Border.all(
+                                                    color: snapshot.data![index]
+                                                                .status ==
+                                                            1
+                                                        ? const Color(0xFF42b883)
+                                                            .withOpacity(0.5)
+                                                        : Colors.transparent),
+                                                borderRadius:
+                                                    BorderRadius.circular(20),
+                                                color: snapshot.data![index]
+                                                            .status ==
+                                                        1
+                                                    ? const Color(0xFF42b883)
+                                                        .withOpacity(0.3)
+                                                    : Colors.grey
+                                                        .withOpacity(0.1)),
+                                            child: Text(
+                                                snapshot.data![index].title!),
+                                          ),
+                                        ),
+                                      );
+                                    });
+                              }
+                              return Container();
+                            }),
+                      ),
+                    ],
+                  ),
                 ),
               ),
               const SizedBox(height: 8),
@@ -108,29 +272,56 @@ class CameraPageState extends State<CameraPage> with WidgetsBindingObserver {
                 children: [
                   Padding(
                     padding: const EdgeInsets.all(16),
-                    child: IconButton(
-                        onPressed: () {
-                          Navigator.of(context).push(
-                            MaterialPageRoute(
-                              builder: (context) => const CommandPage(),
-                            ),
-                          );
-                        },
-                        icon: const Icon(
-                          Icons.language,
-                          size: 30,
-                        )),
+                    child: JustTheTooltip(
+                      preferredDirection: AxisDirection.up,
+                      backgroundColor: Colors.grey[900],
+                      content: const Padding(
+                        padding: EdgeInsets.all(8.0),
+                        child: Text(
+                          'Command',
+                          style: TextStyle(
+                              fontWeight: FontWeight.w600, color: Colors.white),
+                        ),
+                      ),
+                      child: IconButton(
+                          onPressed: () {
+                            Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (context) => const CommandPage(),
+                              ),
+                            );
+                          },
+                          icon: const Icon(
+                            Icons.language,
+                            color: Colors.white,
+                            size: 30,
+                          )),
+                    ),
                   ),
-                  ElevatedButton(
-                    onPressed: _onTakePhotoPressed,
-                    style: ElevatedButton.styleFrom(
-                        fixedSize: const Size(75, 75),
-                        shape: const CircleBorder(),
-                        backgroundColor: Colors.grey.withOpacity(0.1)),
-                    child: const Icon(
-                      Icons.camera_alt,
-                      color: Colors.white,
-                      size: 25,
+                  JustTheTooltip(
+                    preferredDirection: AxisDirection.up,
+                    backgroundColor: Colors.grey[900],
+                    content: const Padding(
+                      padding: EdgeInsets.all(8.0),
+                      child: Text(
+                        'Capture',
+                        style: TextStyle(
+                            fontWeight: FontWeight.w600, color: Colors.white),
+                      ),
+                    ),
+                    child: ElevatedButton(
+                      onPressed: () {
+                        onTakePhotoPressed(controller.currCommand);
+                      },
+                      style: ElevatedButton.styleFrom(
+                          fixedSize: const Size(75, 75),
+                          shape: const CircleBorder(),
+                          backgroundColor: Colors.grey.withOpacity(0.3)),
+                      child: const Icon(
+                        Icons.camera_alt,
+                        color: Colors.white,
+                        size: 25,
+                      ),
                     ),
                   ),
                   Padding(
@@ -138,7 +329,7 @@ class CameraPageState extends State<CameraPage> with WidgetsBindingObserver {
                     child: IconButton(
                         onPressed: () {},
                         icon: const Icon(
-                          Icons.camera_front,
+                          Icons.save_rounded,
                           size: 30,
                         )),
                   ),
