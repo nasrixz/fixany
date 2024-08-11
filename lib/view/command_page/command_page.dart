@@ -7,8 +7,6 @@ import 'package:fixany/view/edit_command_page/edit_command_page.dart';
 import 'package:flutter/material.dart';
 import 'package:just_the_tooltip/just_the_tooltip.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
-import 'package:path/path.dart';
-
 class CommandPage extends StatefulWidget {
   const CommandPage({super.key});
 

@@ -8,6 +8,7 @@ import 'package:fixany/model/command_model.dart';
 import 'package:fixany/services/database_helper.dart';
 import 'package:fixany/view/command_page/command_page.dart';
 import 'package:fixany/view/preview/preview_page.dart';
+import 'package:fixany/view/saved_response/saved_response.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:just_the_tooltip/just_the_tooltip.dart';
@@ -23,26 +24,40 @@ class CameraPageState extends State<CameraPage> with WidgetsBindingObserver {
   final cController = getIt<CameraFunction>();
   bool _isCameraInitialized = false;
   late final List<CameraDescription> _cameras;
-  DatabaseHelper noteDatabase = DatabaseHelper.instance;
+  DatabaseHelper commanddb = DatabaseHelper.instance;
   List<CommandModel> command = [];
   final controller = getIt<UtilsController>();
- 
 
   @override
   void initState() {
-    controller.rtcommand = StreamController<List<CommandModel>>();
-    controller.currentCommandCL = StreamController<CommandModel>();
-    noteDatabase.getAll().then((value) {
-      controller.rtcommand.sink.add(value);
-      setState(() {
-        command = value;
-        controller.cmdData = value;
+    commanddb.getAll().then((value) {
+      if (value.isEmpty) {
+        commanddb.insert(CommandModel('Default Command',
+            'Analyze the broken part, and list the step to fix it', 1));
+        commanddb.insert(CommandModel(
+            'Google Cookbook ',
+            'Analyze the ingredient , and create receipe with that ingredient',
+            0));
+      } else {}
+    }).then((V) {
+      commanddb.getAll().then((value) {
+        controller.rtcommand.sink.add(value);
+        setState(() {
+          command = value;
+          controller.cmdData = value;
+          if (controller.currCommand == '') {
+            controller.currCommand = command[0].command!;
+          }
+        });
       });
     });
-    
-    super.initState();
     WidgetsBinding.instance.addObserver(this);
+
     initCamera();
+    controller.rtcommand = StreamController<List<CommandModel>>();
+    controller.currentCommandCL = StreamController<CommandModel>();
+
+    super.initState();
   }
 
   Future<void> initCamera() async {
@@ -82,6 +97,7 @@ class CameraPageState extends State<CameraPage> with WidgetsBindingObserver {
     final xFile = await cController.capturePhoto();
     if (xFile != null) {
       if (xFile.path.isNotEmpty) {
+        // controller.show.sink.add(false);
         navigator.push(
           MaterialPageRoute(
             builder: (context) => PreviewPage(
@@ -106,12 +122,10 @@ class CameraPageState extends State<CameraPage> with WidgetsBindingObserver {
                       width: double.infinity,
                       child: CameraPreview(cController.controller!))),
               Padding(
-                padding: const EdgeInsets.all(8),
+                padding: const EdgeInsets.all(16),
                 child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const SizedBox(
-                      width: 12,
-                    ),
                     JustTheTooltip(
                       preferredDirection: AxisDirection.up,
                       backgroundColor: Colors.grey[900],
@@ -129,13 +143,7 @@ class CameraPageState extends State<CameraPage> with WidgetsBindingObserver {
                         width: 80,
                       ),
                     ),
-                    Expanded(child: Container()),
-                    IconButton(
-                        onPressed: () {},
-                        icon: const Icon(
-                          Icons.settings,
-                          color: Color(0xFF42b883),
-                        ))
+                    
                   ],
                 ),
               ),
@@ -148,7 +156,7 @@ class CameraPageState extends State<CameraPage> with WidgetsBindingObserver {
                     children: [
                       Expanded(
                         child: StreamBuilder<List<CommandModel>>(
-                          initialData: command,
+                            initialData: command,
                             stream: controller.rtcommand.stream,
                             builder: (context, snapshot) {
                               if (snapshot.connectionState ==
@@ -171,31 +179,32 @@ class CameraPageState extends State<CameraPage> with WidgetsBindingObserver {
                                     itemBuilder: (context, index) {
                                       return GestureDetector(
                                         onTap: () {
-                                          if (snapshot.data![index].status == 0) {
+                                          if (snapshot.data![index].status ==
+                                              0) {
                                             for (int i = 0;
                                                 i < snapshot.data!.length;
                                                 i++) {
-                                              noteDatabase.updateAll(
+                                              commanddb.updateAll(
                                                   0, snapshot.data![i].id!);
                                             }
-                                            noteDatabase
+                                            commanddb
                                                 .update(
                                                     CommandModel(
                                                         snapshot
                                                             .data![index].title,
-                                                        snapshot
-                                                            .data![index].command,
+                                                        snapshot.data![index]
+                                                            .command,
                                                         1),
                                                     snapshot.data![index].id!)
                                                 .then((value) {
-                                              noteDatabase.getAll().then((value) {
+                                              commanddb.getAll().then((value) {
                                                 controller.rtcommand.sink
                                                     .add(value);
                                               });
                                             });
                                             setState(() {
-                                              controller.currCommand =
-                                                  snapshot.data![index].command!;
+                                              controller.currCommand = snapshot
+                                                  .data![index].command!;
                                             });
                                             debugPrint(controller.currCommand);
                                           }
@@ -215,16 +224,19 @@ class CameraPageState extends State<CameraPage> with WidgetsBindingObserver {
                                                 const Text(
                                                   'Command',
                                                   style: TextStyle(
-                                                      fontWeight: FontWeight.w600,
+                                                      fontWeight:
+                                                          FontWeight.w600,
                                                       color: Colors.white),
                                                 ),
                                                 const SizedBox(
                                                   height: 5,
                                                 ),
                                                 Text(
-                                                  snapshot.data![index].command!,
+                                                  snapshot
+                                                      .data![index].command!,
                                                   style: const TextStyle(
-                                                      fontWeight: FontWeight.w400,
+                                                      fontWeight:
+                                                          FontWeight.w400,
                                                       color: Colors.white),
                                                 ),
                                               ],
@@ -240,7 +252,8 @@ class CameraPageState extends State<CameraPage> with WidgetsBindingObserver {
                                                     color: snapshot.data![index]
                                                                 .status ==
                                                             1
-                                                        ? const Color(0xFF42b883)
+                                                        ? const Color(
+                                                                0xFF42b883)
                                                             .withOpacity(0.5)
                                                         : Colors.transparent),
                                                 borderRadius:
@@ -327,7 +340,13 @@ class CameraPageState extends State<CameraPage> with WidgetsBindingObserver {
                   Padding(
                     padding: const EdgeInsets.all(16),
                     child: IconButton(
-                        onPressed: () {},
+                        onPressed: () {
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (context) => const SavedResponsePage(),
+                            ),
+                          );
+                        },
                         icon: const Icon(
                           Icons.save_rounded,
                           size: 30,
