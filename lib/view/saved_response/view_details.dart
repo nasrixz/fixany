@@ -1,24 +1,14 @@
 import 'dart:async';
-import 'dart:convert';
 import 'dart:io';
-import 'package:camera/camera.dart';
 import 'package:fixany/controller/model_controller.dart';
 import 'package:fixany/controller/utils_controller.dart';
 import 'package:fixany/di/service_locator.dart';
-import 'package:fixany/model/command_model.dart';
 import 'package:fixany/model/response_model.dart';
-import 'package:fixany/model/saved_response_model.dart';
 import 'package:fixany/services/database_helper.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:gal/gal.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:google_generative_ai/google_generative_ai.dart';
-import 'package:lottie/lottie.dart';
-import 'package:path_provider/path_provider.dart';
-import 'package:permission_handler/permission_handler.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class ViewDetails extends StatefulWidget {
