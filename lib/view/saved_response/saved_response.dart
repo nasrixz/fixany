@@ -16,12 +16,12 @@ class SavedResponsePage extends StatefulWidget {
 }
 
 class _SavedResponsePageState extends State<SavedResponsePage> {
-  DatabaseHelper noteDatabase = DatabaseHelper.instance;
+  DatabaseHelper db = DatabaseHelper.instance;
   List<SavedResponseModel> command = [];
   final controller = getIt<UtilsController>();
   @override
   void initState() {
-    noteDatabase.getAllS().then((value) {
+    db.getAllS().then((value) {
       setState(() {
         command = value;
       });
@@ -72,7 +72,7 @@ class _SavedResponsePageState extends State<SavedResponsePage> {
                                             response: command[index].response!,
                                             id: command[index].id!)))
                                     .then((_) {
-                                  noteDatabase.getAllS().then((value) {
+                                  db.getAllS().then((value) {
                                     setState(() {
                                       command = value;
                                     });
@@ -163,7 +163,7 @@ class _SavedResponsePageState extends State<SavedResponsePage> {
                   )
                 : const Expanded(
                     child: Center(
-                      child: Text('No Command Available'),
+                      child: Text('No Saved Response available'),
                     ),
                   ),
           ],
@@ -194,8 +194,8 @@ class _SavedResponsePageState extends State<SavedResponsePage> {
             ),
             TextButton(
               onPressed: () {
-                noteDatabase.deleteS(id).then((v) {
-                  noteDatabase.getAllS().then((value) {
+                db.deleteS(id).then((v) {
+                  db.getAllS().then((value) {
                     setState(() {
                       command = value;
                     });

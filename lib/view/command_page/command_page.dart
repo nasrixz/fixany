@@ -15,12 +15,12 @@ class CommandPage extends StatefulWidget {
 }
 
 class _CommandPageState extends State<CommandPage> {
-  DatabaseHelper noteDatabase = DatabaseHelper.instance;
+  DatabaseHelper db = DatabaseHelper.instance;
   List<CommandModel> command = [];
   final controller = getIt<UtilsController>();
   @override
   void initState() {
-    noteDatabase.getAll().then((value) {
+    db.getAll().then((value) {
       setState(() {
         command = value;
       });
@@ -63,15 +63,15 @@ class _CommandPageState extends State<CommandPage> {
                           onTap: () {
                             if (command[index].status == 0) {
                               for (int i = 0; i < command.length; i++) {
-                                noteDatabase.updateAll(0, command[i].id!);
+                                db.updateAll(0, command[i].id!);
                               }
-                              noteDatabase
+                              db
                                   .update(
                                       CommandModel(command[index].title,
                                           command[index].command, 1),
                                       command[index].id!)
                                   .then((value) {
-                                noteDatabase.getAll().then((value) {
+                                db.getAll().then((value) {
                                   controller.rtcommand.sink.add(value);
                                   setState(() {
                                     command = value;
@@ -189,7 +189,7 @@ class _CommandPageState extends State<CommandPage> {
               Navigator.of(context)
                   .push(MaterialPageRoute(
                       builder: (context) => const AddCommand()))
-                  .then((v) => noteDatabase.getAll().then((value) {
+                  .then((v) => db.getAll().then((value) {
                         setState(() {
                           command = value;
                         });
@@ -224,8 +224,8 @@ class _CommandPageState extends State<CommandPage> {
             ),
             TextButton(
               onPressed: () {
-                noteDatabase.delete(id).then((v) {
-                  noteDatabase.getAll().then((value) {
+                db.delete(id).then((v) {
+                  db.getAll().then((value) {
                     setState(() {
                       command = value;
                     });
