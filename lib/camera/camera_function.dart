@@ -6,7 +6,6 @@ class CameraFunction {
   Future<XFile?> capturePhoto() async {
     final CameraController? cameraController = controller;
     if (cameraController!.value.isTakingPicture) {
-      // A capture is already pending, do nothing.
       return null;
     }
     try {

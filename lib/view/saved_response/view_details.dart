@@ -59,7 +59,6 @@ class _ViewDetailsState extends State<ViewDetails> {
                   padding: const EdgeInsets.only(
                       top: 8, right: 8, left: 8, bottom: 8),
                   child: Row(
-                    // mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       IconButton(
                           onPressed: () {

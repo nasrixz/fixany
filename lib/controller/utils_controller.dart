@@ -35,7 +35,6 @@ class UtilsController {
       Permission.mediaLibrary,
     ].request();
     if (status[Permission.storage]!.isDenied) {
-      // Microphone permission is denied
     }
   }
   Future<String> createFolder(String folder) async {

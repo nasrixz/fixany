@@ -97,7 +97,6 @@ class _EditCommandPageState extends State<EditCommandPage> {
                           isDense: true,
                           contentPadding: const EdgeInsets.symmetric(
                               vertical: 8, horizontal: 8),
-                          // hintText: hintText,
                           filled: true,
                           fillColor: Colors.grey.withOpacity(0.05),
                           enabledBorder: OutlineInputBorder(
@@ -137,7 +136,6 @@ class _EditCommandPageState extends State<EditCommandPage> {
                           isDense: true,
                           contentPadding: const EdgeInsets.symmetric(
                               vertical: 8, horizontal: 8),
-                          // hintText: hintText,
                           filled: true,
                           fillColor: Colors.grey.withOpacity(0.05),
                           enabledBorder: OutlineInputBorder(

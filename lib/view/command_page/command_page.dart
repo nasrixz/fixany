@@ -86,7 +86,6 @@ class _CommandPageState extends State<CommandPage> {
                               motion: const ScrollMotion(),
                               children: [
                                 SlidableAction(
-                                  // An action can be bigger than the others.
                                   onPressed: (context) {
                                     Navigator.of(context).push(
                                       MaterialPageRoute(

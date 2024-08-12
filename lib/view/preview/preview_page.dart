@@ -137,7 +137,6 @@ class _PreviewPageState extends State<PreviewPage> {
                   Padding(
                     padding: const EdgeInsets.only(top: 8, right: 8),
                     child: Row(
-                      // mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         IconButton(
                             onPressed: () {

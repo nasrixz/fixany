@@ -11,7 +11,6 @@ class ModelController {
       Permission.mediaLibrary,
     ].request();
     if (status[Permission.storage]!.isDenied) {
-      // Microphone permission is denied
     }
   }
 

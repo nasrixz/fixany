@@ -8,13 +8,9 @@ import 'package:flutter/material.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await setup();
-
   final utilController = getIt<UtilsController>();
-
-  // utilController.test();
   utilController.configureTts();
-  // utilController.requestPermissions();
- runApp(const MyApp());
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
@@ -22,9 +18,7 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // final brightness = View.of(context).platformDispatcher.platformBrightness;
     TextTheme textTheme = createTextTheme(context, "Poppins", "Poppins");
-
     MaterialTheme theme = MaterialTheme(textTheme);
     return MaterialApp(
       themeMode: ThemeMode.dark,
@@ -34,4 +28,3 @@ class MyApp extends StatelessWidget {
     );
   }
 }
-
