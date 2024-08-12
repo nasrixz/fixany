@@ -1,15 +1,22 @@
 # fixany
 
-A new Flutter project.
+Fixany is an AI app that empowers users to create, save, and improve custom commands. With a focus on user experience, it offers features like command storage, editing, and reuse. Our "Fix anything" tagline reflects our commitment to problem-solving.
 
-## Getting Started
+Beyond AI, Fixany promotes sustainability by helping users repair items through image analysis. To achieve this, we use the Gemini API. We also prioritize inclusivity with features like text-to-speech and accessible controls.
 
-This project is a starting point for a Flutter application.
+Fixany is more than an app; it's a tool for creativity and efficiency. Future plans include command sharing to build a global community.
 
-A few resources to get you started if this is your first Flutter project:
+![alt text](https://github.com/nasrixz/fixany/blob/main/thumbnail.jpg?raw=true)
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+## Get Beta Version
+Introduction and Demo Video, Youtube Link:
+https://www.youtube.com/watch?v=8VTpplV-4h4
+
+Google Drive Link:
+(https://drive.google.com/file/d/1veZh19mN485qM386v9I7jbHLAdDqiahd/view?usp=sharing)
+
+Any comment or improvement please email me on:
+nasrirusni1@gmail.com
 
 For help getting started with Flutter development, view the
 [online documentation](https://docs.flutter.dev/), which offers tutorials,
